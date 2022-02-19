@@ -34,11 +34,13 @@ mod tests {
     #[test]
     fn convert_hex_to_bytes() {
         let hex1: &[u8] = "012".as_bytes();
-        let hex2: &[u8] = "0123".as_bytes();
-        let hex3: &[u8] = "0Aab".as_bytes();
+        let hex2: &[u8] = "Abg0".as_bytes();
+        let hex3: &[u8] = "0123".as_bytes();
+        let hex4: &[u8] = "0Aab".as_bytes();
 
         assert_eq!(decode(hex1), Err("Invalid slice length: 3".to_string()));
-        assert_eq!(decode(hex2), Ok(vec![1, 35]));
-        assert_eq!(decode(hex3), Ok(vec![10, 171]));
+        assert_eq!(decode(hex2), Err("Invalid hex value: 103".to_string()));
+        assert_eq!(decode(hex3), Ok(vec![1, 35]));
+        assert_eq!(decode(hex4), Ok(vec![10, 171]));
     }
 }
