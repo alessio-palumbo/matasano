@@ -2,7 +2,7 @@ use crate::challenges::helpers::read_input;
 use base64::encode_to_string;
 use hex::decode;
 
-/// Challenge 1 is the first Marasano challenge of Set 1.
+/// Challenge 1 is the first Matasano challenge of Set 1.
 pub fn challenge_one() {
     println!("\n# Challenge 1 #");
     loop {

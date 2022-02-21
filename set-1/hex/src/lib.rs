@@ -1,4 +1,16 @@
-/// Decodes a hex-encoded slice of bytes and either returns
+const HEX_TABLE: &[u8] = "0123456789abcdef".as_bytes();
+
+/// Encodes a slice of bytes into an hex vector.
+pub fn encode(s: &[u8]) -> Vec<u8> {
+    let mut v: Vec<u8> = Vec::new();
+    for b in s.iter() {
+        v.push(HEX_TABLE[(b >> 4) as usize]);
+        v.push(HEX_TABLE[(b & 0x0f) as usize]);
+    }
+    v
+}
+
+/// Decodes an even size hex-encoded slice of bytes and either returns
 /// a vector of bytes or an error message.
 pub fn decode(b: &[u8]) -> Result<Vec<u8>, String> {
     if b.len() % 2 != 0 {
@@ -17,14 +29,12 @@ pub fn decode(b: &[u8]) -> Result<Vec<u8>, String> {
 }
 
 fn from_hex(c: u8) -> Result<u8, String> {
-    if (b'0'..=b'9').contains(&c) {
-        return Ok(c - b'0');
-    } else if (b'a'..=b'f').contains(&c) {
-        return Ok(c - b'a' + 10);
-    } else if (b'A'..=b'F').contains(&c) {
-        return Ok(c - b'A' + 10);
+    match c {
+        b'0'..=b'9' => Ok(c - b'0'),
+        b'a'..=b'f' => Ok(c - b'a' + 10),
+        b'A'..=b'F' => Ok(c - b'A' + 10),
+        _ => Err(format!("Invalid hex value: {}", c)),
     }
-    return Err(format!("Invalid hex value: {}", c));
 }
 
 #[cfg(test)]
@@ -32,7 +42,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn convert_hex_to_bytes() {
+    fn test_decode() {
         let hex1: &[u8] = "012".as_bytes();
         let hex2: &[u8] = "Abg0".as_bytes();
         let hex3: &[u8] = "0123".as_bytes();
