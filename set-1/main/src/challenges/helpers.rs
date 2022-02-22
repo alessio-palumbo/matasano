@@ -1,4 +1,5 @@
 use crate::challenges::one::challenge_one;
+use crate::challenges::three::challenge_three;
 use crate::challenges::two::challenge_two;
 use std::io;
 
@@ -14,7 +15,8 @@ pub fn select_challenge() {
         match challenge {
             1 => return challenge_one(),
             2 => return challenge_two(),
-            3..=8 => println!("Challenge not yet solved."),
+            3 => return challenge_three(),
+            4..=8 => println!("Challenge not yet solved."),
             _ => println!("Invalid challenge. Must be 1-8."),
         }
     }
