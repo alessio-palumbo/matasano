@@ -28,7 +28,7 @@ pub fn decode(b: &[u8]) -> Result<Vec<u8>, String> {
     Ok(v)
 }
 
-fn from_hex(c: u8) -> Result<u8, String> {
+pub fn from_hex(c: u8) -> Result<u8, String> {
     match c {
         b'0'..=b'9' => Ok(c - b'0'),
         b'a'..=b'f' => Ok(c - b'a' + 10),
