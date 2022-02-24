@@ -1,7 +1,5 @@
-use crate::challenges::helpers::read_input;
+use crate::challenges::helpers::{ok_or_continue, read_input};
 use hex::decode;
-
-const ALPHABET: &[u8] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".as_bytes();
 
 /// Challenge 3 is the third Matasano challenge of Set 1.
 pub fn challenge_three() {
@@ -10,47 +8,47 @@ pub fn challenge_three() {
         let hex = read_input("Please input single-character xor-encrypted hex string:/n");
         let hex = decode(hex.as_bytes()).unwrap();
 
-        match force_decrypt(&hex, ALPHABET) {
+        match single_char_force_decrypt(&hex) {
             Ok((dec, c)) => println!("String was XORed with '{}':\n>>>> {}", c as char, dec),
             Err(e) => println!("{}", e),
         }
     }
 }
 
-// Attempts to decrypts a slice by XORing each byte against a single byte
-// of the given set and then validating against a small set of valid English characters.
-// If it finds a valid match it returns the valid string and the decrypting byte,
-// otherwise it repeats the process with the next byte of the set.
-fn force_decrypt(buf: &[u8], set: &[u8]) -> Result<(String, u8), String> {
-    for b in set.iter() {
-        let s = String::from_utf8(single_char_xor(buf, b)).unwrap();
-        match is_valid_message(&s) {
-            Ok(_) => return Ok((s, *b)),
-            Err(c) => println!("XOR with char '{}' produces an invalid string", c as char),
-        }
+/// Attempts to decrypts a slice by XORing each byte against a single byte
+/// value, then validates against a small set of valid English characters.
+/// If it finds a valid match it returns the valid string and the decrypting byte,
+/// otherwise it repeats the process with the next byte of the set.
+pub fn single_char_force_decrypt(buf: &[u8]) -> Result<(String, u8), String> {
+    for b in 0..=255 {
+        let s = ok_or_continue!(String::from_utf8(single_char_xor(buf, &b)));
+
+        ok_or_continue!(is_valid_message(&s));
+        return Ok((s, b));
     }
     Err(String::from("Could not found decryption key"))
 }
 
-// Checks a string against invalid characters.
-// TODO Improve validation to cater for the following:
-// * multiple spaces, commas or quotes
-// * word length and current average (missing spaces?)
-// * mix case in single word (only allow capitalised or all caps)
+/// Checks a string against invalid characters.
+/// TODO Improve validation to cater for the following:
+/// * multiple spaces, commas or quotes
+/// * word length and current average (missing spaces?)
+/// * mix case in single word (only allow capitalised or all caps)
 fn is_valid_message(s: &str) -> Result<(), char> {
-    let ls = s.to_lowercase();
-    for c in ls.chars() {
+    for c in s.chars() {
         if !c.is_ascii_alphabetic() {
             match c {
-                ' ' | ',' | '\'' | '!' | '?' | ':' | '.' => continue,
-                _ => return Err(c),
+                ' ' | ',' | '\'' | '\n' | '!' | '?' | ':' | '.' => continue,
+                _ => {
+                    return Err(c);
+                }
             }
         }
     }
     Ok(())
 }
 
-// Applies a single character XOR operation to a buffer.
+/// Applies a single character XOR operation to a buffer.
 pub fn single_char_xor(buf: &[u8], c: &u8) -> Vec<u8> {
     let mut v: Vec<u8> = Vec::new();
     for b in buf.iter() {
@@ -90,5 +88,14 @@ mod tests {
         assert_eq!(got, want);
     }
 
-    // TODO Add test for force_decrypt
+    #[test]
+    fn test_force_decryt() {
+        let buf: &[u8] = &decode(
+            "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736".as_bytes(),
+        )
+        .unwrap();
+        let got = single_char_force_decrypt(buf);
+        let want = Ok((String::from("Cooking MC's like a pound of bacon"), 88));
+        assert_eq!(got, want);
+    }
 }

@@ -1,3 +1,4 @@
+use crate::challenges::four::challenge_four;
 use crate::challenges::one::challenge_one;
 use crate::challenges::three::challenge_three;
 use crate::challenges::two::challenge_two;
@@ -16,7 +17,8 @@ pub fn select_challenge() {
             1 => return challenge_one(),
             2 => return challenge_two(),
             3 => return challenge_three(),
-            4..=8 => println!("Challenge not yet solved."),
+            4 => return challenge_four(),
+            5..=8 => println!("Challenge not yet solved."),
             _ => println!("Invalid challenge. Must be 1-8."),
         }
     }
@@ -33,3 +35,15 @@ pub fn read_input(msg: &str) -> String {
 
     input.trim().to_string()
 }
+
+/// Only look for an Ok Result otherwise continue outer loop.
+macro_rules! ok_or_continue {
+    ($res:expr) => {
+        match $res {
+            Ok(v) => v,
+            Err(_) => continue,
+        }
+    };
+}
+
+pub(crate) use ok_or_continue;

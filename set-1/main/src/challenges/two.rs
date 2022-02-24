@@ -25,7 +25,7 @@ pub fn challenge_two() {
     }
 }
 
-// Performs a XOR operation between two buffers of the same size.
+/// Performs a XOR operation between two buffers of the same size.
 pub fn fixed_xor(buf_a: &[u8], buf_b: &[u8]) -> Result<Vec<u8>, String> {
     if buf_a.len() != buf_b.len() {
         return Err("Buffers must have equal length".to_string());
