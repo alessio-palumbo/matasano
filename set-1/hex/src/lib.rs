@@ -18,16 +18,13 @@ pub fn decode(b: &[u8]) -> Result<Vec<u8>, String> {
     }
 
     let mut v: Vec<u8> = Vec::new();
-
     for i in (0..b.len()).step_by(2) {
-        let hb = from_hex(b[i])?;
-        let lb = from_hex(b[i + 1])?;
-        v.push(hb << 4 | lb);
+        v.push(from_hex(b[i])? << 4 | from_hex(b[i + 1])?);
     }
-
     Ok(v)
 }
 
+/// Decodes a hex char into the represented 4 bits value.
 pub fn from_hex(c: u8) -> Result<u8, String> {
     match c {
         b'0'..=b'9' => Ok(c - b'0'),

@@ -29,6 +29,15 @@ pub fn single_char_force_decrypt(buf: &[u8]) -> Result<(String, u8), String> {
     Err(String::from("Could not found decryption key"))
 }
 
+/// Applies a single character XOR operation to a buffer.
+pub fn single_char_xor(buf: &[u8], c: &u8) -> Vec<u8> {
+    let mut v: Vec<u8> = Vec::new();
+    for b in buf.iter() {
+        v.push(b ^ c);
+    }
+    v
+}
+
 /// Checks a string against invalid characters.
 /// TODO Improve validation to cater for the following:
 /// * multiple spaces, commas or quotes
@@ -46,15 +55,6 @@ fn is_valid_message(s: &str) -> Result<(), char> {
         }
     }
     Ok(())
-}
-
-/// Applies a single character XOR operation to a buffer.
-pub fn single_char_xor(buf: &[u8], c: &u8) -> Vec<u8> {
-    let mut v: Vec<u8> = Vec::new();
-    for b in buf.iter() {
-        v.push(b ^ c);
-    }
-    v
 }
 
 #[cfg(test)]
