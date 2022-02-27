@@ -45,9 +45,9 @@ pub fn single_char_xor(buf: &[u8], c: &u8) -> Vec<u8> {
 /// * mix case in single word (only allow capitalised or all caps)
 fn is_valid_message(s: &str) -> Result<(), char> {
     for c in s.chars() {
-        if !c.is_ascii_alphabetic() {
+        if !c.is_ascii_alphanumeric() {
             match c {
-                ' ' | ',' | '\'' | '\n' | '!' | '?' | ':' | '.' => continue,
+                ' ' | ',' | '\'' | '"' | '-' | '\n' | '!' | '?' | ':' | '.' => continue,
                 _ => {
                     return Err(c);
                 }
