@@ -7,7 +7,7 @@ use std::fs;
 pub fn challenge_four() {
     println!("\n# Challenge 4 #");
     loop {
-        let filename = read_input("Please input filename:/n");
+        let filename = read_input("Please input filename:");
         match read_and_decrypt_lines(&filename) {
             Ok((dec, c)) => println!("String was XORed with '{}':\n>>>> {}", c as char, dec),
             Err(e) => println!("{}", e),

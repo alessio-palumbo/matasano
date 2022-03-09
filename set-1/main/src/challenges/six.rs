@@ -6,7 +6,7 @@ use std::fs;
 pub fn challenge_six() {
     println!("\n# Challenge 6 #");
     loop {
-        let filename = read_input("Please input filename of encrypted file:/n");
+        let filename = read_input("Please input filename of encrypted file:");
         let src = fs::read_to_string(filename).unwrap();
         let guessed = break_repeating_key_xor(src.as_bytes());
         println!("{}", String::from_utf8(guessed).unwrap());

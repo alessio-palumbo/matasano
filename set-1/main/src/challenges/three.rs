@@ -5,7 +5,7 @@ use hex::decode;
 pub fn challenge_three() {
     println!("\n# Challenge 3 #");
     loop {
-        let hex = read_input("Please input single-character xor-encrypted hex string:/n");
+        let hex = read_input("Please input single-character xor-encrypted hex string:");
         let hex = decode(hex.as_bytes()).unwrap();
 
         match single_char_force_decrypt(&hex) {
