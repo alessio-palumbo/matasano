@@ -1,5 +1,6 @@
-use crate::challenges::helpers::{ok_or_continue, read_input};
 use crate::challenges::three::single_char_force_decrypt;
+use common::io::read_input;
+use common::ok_or_continue;
 use std::fs;
 
 /// Challenge 6 is the sixth Matasano challenge of Set 1.
@@ -137,8 +138,8 @@ mod tests {
 
     #[test]
     fn test_compute_hamming_distance() {
-        let a = "this is a test".as_bytes();
-        let b = "wokka wokka!!!".as_bytes();
+        let a = b"this is a test";
+        let b = b"wokka wokka!!!";
         assert_eq!(compute_hamming_distance(a, b), 37);
     }
 
@@ -150,7 +151,7 @@ mod tests {
 
     #[test]
     fn test_break_to_blocks() {
-        let src: &[u8] = "012345".as_bytes();
+        let src = b"012345";
         let mut dst: Vec<Vec<u8>> = vec![vec![0; 3]; 2];
         break_to_blocks(src, &mut dst, 3);
         let want: Vec<Vec<u8>> = vec![vec![48, 49, 50], vec![51, 52, 53]];

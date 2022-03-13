@@ -1,3 +1,4 @@
+mod challenges;
 use crate::challenges::eight::challenge_eight;
 use crate::challenges::five::challenge_five;
 use crate::challenges::four::challenge_four;
@@ -6,11 +7,9 @@ use crate::challenges::seven::challenge_seven;
 use crate::challenges::six::challenge_six;
 use crate::challenges::three::challenge_three;
 use crate::challenges::two::challenge_two;
-use std::io;
+use common::io::read_input;
 
-/// Select the challenge to run in range 1-8.
-/// It panics if the input is not an integer.
-pub fn select_challenge() {
+fn main() {
     loop {
         let input = read_input("Please select challenge to run:(1-8)");
         let challenge: usize = input
@@ -30,27 +29,3 @@ pub fn select_challenge() {
         }
     }
 }
-
-/// Prints a message then return the user's input stripped of whitespaces.
-pub fn read_input(msg: &str) -> String {
-    let mut input = String::new();
-    println!("{}", msg);
-
-    io::stdin()
-        .read_line(&mut input)
-        .expect("Failed to read input");
-
-    input.trim().to_string()
-}
-
-/// Only look for an Ok Result otherwise continue outer loop.
-macro_rules! ok_or_continue {
-    ($res:expr) => {
-        match $res {
-            Ok(v) => v,
-            Err(_) => continue,
-        }
-    };
-}
-
-pub(crate) use ok_or_continue;

@@ -1,9 +1,6 @@
-use crate::challenges::helpers::read_input;
-use aes::cipher::{generic_array::GenericArray, BlockDecrypt, KeyInit};
-use aes::Aes128;
+use common::io::read_input;
+use crypto::aes::decrypt_ecb;
 use std::fs;
-
-pub const BLOCK_SIZE: usize = 16;
 
 /// Challenge 7 is the seventh Matasano challenge of Set 1.
 pub fn challenge_seven() {
@@ -18,31 +15,7 @@ pub fn challenge_seven() {
 }
 
 fn decrypt_aes_in_ecb_mode(src: &[u8], key: &[u8]) -> Vec<u8> {
-    if key.len() != BLOCK_SIZE {
-        panic!("invalid key length");
-    }
-
-    let key: [u8; BLOCK_SIZE] = key.try_into().unwrap();
-    let key = GenericArray::from(key);
-    let cipher = Aes128::new(&key);
-
-    let n_blocks = src.len() / 16;
-    let more = src.len() % 16 != 0;
-
-    let mut blocks =
-        vec![GenericArray::from([0u8; 16]); if more { n_blocks + 1 } else { n_blocks }];
-
-    let n = n_blocks * 16;
-    for (i, b) in (0..n).step_by(16).enumerate() {
-        let block: [u8; 16] = src[b..b + BLOCK_SIZE].try_into().unwrap();
-        blocks[i] = GenericArray::from(block);
-    }
-    if more {
-        let block: [u8; 16] = src[n..].try_into().unwrap();
-        blocks[n / 16] = GenericArray::from(block);
-    }
-    cipher.decrypt_blocks(&mut blocks);
-    blocks.into_iter().flatten().collect()
+    decrypt_ecb(src, key)
 }
 
 #[cfg(test)]
@@ -52,7 +25,7 @@ mod tests {
     #[test]
     fn test_decrypt_aes_in_ecb_mode() {
         let src = fs::read("src/challenges/testdata/aes_in_ecb_mode_raw.txt").unwrap();
-        let key = "YELLOW SUBMARINE".as_bytes();
+        let key = b"YELLOW SUBMARINE";
         let got = decrypt_aes_in_ecb_mode(&src, key);
         let want = String::from(
             "I'm back and I'm ringin' the bell \nA rockin' on the mike while the fly girls yell \nIn ecstasy in the back of me \n\

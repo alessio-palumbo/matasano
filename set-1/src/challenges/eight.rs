@@ -1,5 +1,5 @@
-use crate::challenges::helpers::read_input;
-use crate::challenges::seven::BLOCK_SIZE;
+use common::io::read_input;
+use crypto::aes::BLOCK_SIZE;
 use hex::decode;
 use std::collections::HashMap;
 use std::fs;

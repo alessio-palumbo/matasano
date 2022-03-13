@@ -1,4 +1,6 @@
-use crate::challenges::helpers::{ok_or_continue, read_input};
+use common::io::read_input;
+use common::ok_or_continue;
+use crypto::xor::single_char_xor;
 use hex::decode;
 
 /// Challenge 3 is the third Matasano challenge of Set 1.
@@ -29,15 +31,6 @@ pub fn single_char_force_decrypt(buf: &[u8]) -> Result<(String, u8), String> {
     Err(String::from("Could not found decryption key"))
 }
 
-/// Applies a single character XOR operation to a buffer.
-pub fn single_char_xor(buf: &[u8], c: &u8) -> Vec<u8> {
-    let mut v: Vec<u8> = Vec::new();
-    for b in buf.iter() {
-        v.push(b ^ c);
-    }
-    v
-}
-
 /// Checks a string against invalid characters.
 /// TODO Improve validation to cater for the following:
 /// * multiple spaces, commas or quotes
@@ -60,15 +53,6 @@ fn is_valid_message(s: &str) -> Result<(), char> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_single_char_xor() {
-        let buf: &[u8] = "hello".as_bytes();
-        let c: u8 = 64;
-        let got = String::from_utf8(single_char_xor(buf, &c)).unwrap();
-        let want = String::from("(%,,/");
-        assert_eq!(got, want);
-    }
 
     #[test]
     fn test_is_valid_message() {

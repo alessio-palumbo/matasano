@@ -1,5 +1,5 @@
-use crate::challenges::helpers::read_input;
 use base64::encode_to_string;
+use common::io::read_input;
 use hex::decode;
 
 /// Challenge 1 is the first Matasano challenge of Set 1.
