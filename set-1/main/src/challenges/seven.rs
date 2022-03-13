@@ -3,7 +3,7 @@ use aes::cipher::{generic_array::GenericArray, BlockDecrypt, KeyInit};
 use aes::Aes128;
 use std::fs;
 
-const BLOCK_SIZE: usize = 16;
+pub const BLOCK_SIZE: usize = 16;
 
 /// Challenge 7 is the seventh Matasano challenge of Set 1.
 pub fn challenge_seven() {
