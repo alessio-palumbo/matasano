@@ -1,7 +1,11 @@
-[workspace]
+[package]
+name = "main"
+version = "0.1.0"
+edition = "2021"
 
-members = [
-    "main",
-    "hex",
-    "base64",
-]
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+hex = { path = "../hex" }
+base64 = { path = "../base64" }
+aes = "0.8.1"

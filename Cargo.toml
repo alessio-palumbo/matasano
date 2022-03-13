@@ -1,0 +1,7 @@
+[workspace]
+
+members = [
+    "set-1",
+    "hex",
+    "base64",
+]
