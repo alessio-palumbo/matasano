@@ -19,8 +19,8 @@ pub fn challenge_four() {
 fn read_and_decrypt_lines(filename: &str) -> Result<(String, u8), String> {
     let content = fs::read_to_string(filename).expect("Something went wrong reading the file");
     for s in content.split_ascii_whitespace() {
-        let buf = &decode(s.as_bytes()).unwrap();
-        if let Ok(v) = single_char_force_decrypt(buf) {
+        let buf = decode(s.as_bytes()).unwrap();
+        if let Ok(v) = single_char_force_decrypt(&buf) {
             return Ok(v);
         }
     }
@@ -32,7 +32,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_read() {
+    fn test_read_and_decrypt_lines() {
         let filename: &str = "src/challenges/testdata/encrypted_strings.txt";
         let got = read_and_decrypt_lines(filename);
         let want = Ok((String::from("Now that the party is jumping\n"), 53));
