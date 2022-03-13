@@ -2,6 +2,7 @@
 
 members = [
     "set-1",
+    "set-2",
     "hex",
     "base64",
     "crypto",
