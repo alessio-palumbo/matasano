@@ -1,4 +1,4 @@
-const HEX_TABLE: &[u8] = "0123456789abcdef".as_bytes();
+const HEX_TABLE: &[u8; 16] = b"0123456789abcdef";
 
 /// Encodes a slice of bytes into an hex vector.
 pub fn encode(s: &[u8]) -> Vec<u8> {
@@ -40,10 +40,10 @@ mod tests {
 
     #[test]
     fn test_decode() {
-        let hex1: &[u8] = "012".as_bytes();
-        let hex2: &[u8] = "Abg0".as_bytes();
-        let hex3: &[u8] = "0123".as_bytes();
-        let hex4: &[u8] = "0Aab".as_bytes();
+        let hex1 = b"012";
+        let hex2 = b"Abg0";
+        let hex3 = b"0123";
+        let hex4 = b"0Aab";
 
         assert_eq!(decode(hex1), Err("Invalid slice length: 3".to_string()));
         assert_eq!(decode(hex2), Err("Invalid hex value: 103".to_string()));

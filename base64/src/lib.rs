@@ -70,21 +70,21 @@ mod tests {
 
     #[test]
     fn it_encodes() {
-        let src: &[u8] = "abc123!?$*&()'-=@~".as_bytes();
+        let src = b"abc123!?$*&()'-=@~";
         let mut dst: Vec<u8> = vec![0; encode_size(src.len())];
         encode(&mut dst, src);
-        let want: &[u8] = "YWJjMTIzIT8kKiYoKSctPUB+".as_bytes();
+        let want = b"YWJjMTIzIT8kKiYoKSctPUB+";
         assert_eq!(dst, want);
     }
 
     #[test]
     fn it_encodes_to_string() {
-        let src: &[u8] = "abc123!?$*&()'-=@~".as_bytes();
+        let src = b"abc123!?$*&()'-=@~";
         let dst = encode_to_string(src);
         let want = String::from("YWJjMTIzIT8kKiYoKSctPUB+");
         assert_eq!(dst, want);
 
-        let src: &[u8] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit".as_bytes();
+        let src = b"Lorem ipsum dolor sit amet, consectetur adipiscing elit";
         let dst = encode_to_string(src);
         let want = String::from(
             "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdA==",

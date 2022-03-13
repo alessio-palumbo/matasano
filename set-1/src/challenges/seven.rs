@@ -25,7 +25,7 @@ mod tests {
     #[test]
     fn test_decrypt_aes_in_ecb_mode() {
         let src = fs::read("src/challenges/testdata/aes_in_ecb_mode_raw.txt").unwrap();
-        let key = "YELLOW SUBMARINE".as_bytes();
+        let key = b"YELLOW SUBMARINE";
         let got = decrypt_aes_in_ecb_mode(&src, key);
         let want = String::from(
             "I'm back and I'm ringin' the bell \nA rockin' on the mike while the fly girls yell \nIn ecstasy in the back of me \n\
