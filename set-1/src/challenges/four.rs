@@ -1,5 +1,5 @@
-use crate::challenges::helpers::read_input;
 use crate::challenges::three::single_char_force_decrypt;
+use common::io::read_input;
 use hex::decode;
 use std::fs;
 

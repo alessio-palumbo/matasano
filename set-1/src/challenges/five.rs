@@ -1,4 +1,4 @@
-use crate::challenges::helpers::read_input;
+use common::io::read_input;
 use crypto::xor::repeating_key_xor;
 use hex::encode;
 

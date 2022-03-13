@@ -1,5 +1,6 @@
-use crate::challenges::helpers::{ok_or_continue, read_input};
 use crate::challenges::three::single_char_force_decrypt;
+use common::io::read_input;
+use common::ok_or_continue;
 use std::fs;
 
 /// Challenge 6 is the sixth Matasano challenge of Set 1.

@@ -5,4 +5,5 @@ members = [
     "hex",
     "base64",
     "crypto",
+    "common",
 ]

@@ -1,4 +1,5 @@
-use crate::challenges::helpers::{ok_or_continue, read_input};
+use common::io::read_input;
+use common::ok_or_continue;
 use crypto::xor::single_char_xor;
 use hex::decode;
 

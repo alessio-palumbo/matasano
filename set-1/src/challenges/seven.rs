@@ -1,4 +1,4 @@
-use crate::challenges::helpers::read_input;
+use common::io::read_input;
 use crypto::aes::decrypt_ecb;
 use std::fs;
 
