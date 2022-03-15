@@ -1,5 +1,5 @@
 use common::io::read_input;
-use crypto::aes::decrypt_ecb;
+use crypto::aes::Aes128Cipher;
 use std::fs;
 
 /// Challenge 7 is the seventh Matasano challenge of Set 1.
@@ -15,7 +15,10 @@ pub fn challenge_seven() {
 }
 
 fn decrypt_aes_in_ecb_mode(src: &[u8], key: &[u8]) -> Vec<u8> {
-    decrypt_ecb(src, key)
+    let cipher = Aes128Cipher::new(key);
+    let mut blocks = cipher.split_to_blocks(src);
+    cipher.decrypt(&mut blocks);
+    blocks.into_iter().flatten().collect()
 }
 
 #[cfg(test)]
