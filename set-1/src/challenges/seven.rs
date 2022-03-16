@@ -17,7 +17,7 @@ pub fn challenge_seven() {
 fn decrypt_aes_in_ecb_mode(src: &[u8], key: &[u8]) -> Vec<u8> {
     let cipher = Aes128Cipher::new(key);
     let mut blocks = cipher.split_to_blocks(src);
-    cipher.decrypt(&mut blocks);
+    cipher.ecb_decrypt(&mut blocks);
     blocks.into_iter().flatten().collect()
 }
 
