@@ -3,6 +3,13 @@ use crate::xor::fixed_xor;
 use aes::cipher::{generic_array::GenericArray, typenum::U16, BlockDecrypt, BlockEncrypt, KeyInit};
 use aes::Aes128;
 
+#[derive(PartialEq, Debug)]
+pub enum EncryptionMode {
+    UNKNOWN,
+    ECB,
+    CBC,
+}
+
 pub const BLOCK_SIZE: usize = 16;
 
 #[derive(Debug)]

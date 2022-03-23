@@ -1,33 +1,84 @@
 use common::io::read_input;
-use crypto::aes::Aes128Cipher;
+use crypto::aes::{Aes128Cipher, EncryptionMode, BLOCK_SIZE};
+use guess::aes::is_aes_in_ecb_mode;
+use rand::Rng;
 use std::fs;
 
-pub fn challenge_ten() {
-    println!("\n# Challenge 10 #");
+/// Challenge 11 is the eleventh Matasano challenge of Set 2.
+pub fn challenge_eleven() {
+    println!("\n# Challenge 11 #");
     loop {
-        let filename = read_input("Please input filename of an AES-128-CBC encrypted file:");
-        let key = read_input("Please input key:");
-        let iv = read_input("Please input initialisation vector:");
-
-        let src = fs::read(filename).unwrap();
-        let dec = aes_cbc_mode_decrypt(&src, key.as_bytes(), iv.as_bytes());
-        println!("Decrypted:\n>>>> {:?}", String::from_utf8(dec).unwrap());
+        let filename =
+            read_input("Please input filename of an AES-128-ECB or AES-128-CBC encrypted file:");
+        let src = fs::read_to_string(filename).unwrap();
+        match is_aes_ecb_or_cbc(src.as_bytes()) {
+            EncryptionMode::ECB => println!("File encrypted in ECB mode"),
+            _ => println!("File encrypted in CBC mode"),
+        };
     }
 }
 
-#[allow(dead_code)]
-fn aes_cbc_mode_encrypt(src: &[u8], key: &[u8], iv: &[u8]) -> Vec<u8> {
-    let cipher = Aes128Cipher::new(key);
-    let mut blocks = cipher.split_to_blocks(src);
-    let blocks = cipher.cbc_encrypt(iv, &mut blocks);
-    blocks.into_iter().flatten().collect()
+fn is_aes_ecb_or_cbc(src: &[u8]) -> EncryptionMode {
+    match is_aes_in_ecb_mode(src) {
+        true => EncryptionMode::ECB,
+        false => EncryptionMode::CBC,
+    }
 }
 
-fn aes_cbc_mode_decrypt(src: &[u8], key: &[u8], iv: &[u8]) -> Vec<u8> {
-    let cipher = Aes128Cipher::new(key);
-    let mut blocks = cipher.split_to_blocks(src);
-    let blocks = cipher.cbc_decrypt(iv, &mut blocks);
-    blocks.into_iter().flatten().collect()
+#[derive(Debug)]
+#[allow(dead_code)]
+struct RandomEncryptor {
+    key: Vec<u8>,
+    mode: EncryptionMode,
+}
+
+#[allow(dead_code)]
+impl RandomEncryptor {
+    /// Initialises a RandomEncryptor with a random key.
+    pub fn new() -> RandomEncryptor {
+        RandomEncryptor {
+            key: Self::random_key(BLOCK_SIZE),
+            mode: EncryptionMode::UNKNOWN,
+        }
+    }
+
+    /// Generate an Aes128Cipher in either ECB or CBC mode, with randomly padded
+    /// start and end and with random key/iv.
+    pub fn random_encrypt(&mut self, src: &[u8]) -> Vec<u8> {
+        let cipher = Aes128Cipher::new(&self.key);
+        let src = Self::add_random_start_end(src, 5, 10);
+        let mut blocks = cipher.split_to_blocks(&src);
+
+        match rand::thread_rng().gen() {
+            true => {
+                self.mode = EncryptionMode::ECB;
+                cipher.ecb_encrypt(&mut blocks);
+            }
+            false => {
+                self.mode = EncryptionMode::CBC;
+                blocks = cipher.cbc_encrypt(&Self::random_key(BLOCK_SIZE), &mut blocks);
+            }
+        }
+        blocks.into_iter().flatten().collect()
+    }
+
+    /// Generates a random key of the given size.
+    fn random_key(size: usize) -> Vec<u8> {
+        let mut rng = rand::thread_rng();
+        let mut v: Vec<u8> = Vec::with_capacity(size);
+        for _ in 0..size {
+            v.push(rng.gen::<u8>());
+        }
+        v
+    }
+
+    /// Prepends and appends generated slices of bytes to the given slice and returns a vector.
+    fn add_random_start_end(src: &[u8], min: usize, max: usize) -> Vec<u8> {
+        let mut rng = rand::thread_rng();
+        let start = Self::random_key(rng.gen_range(min..=max));
+        let end = Self::random_key(rng.gen_range(min..=max));
+        [start, src.to_vec(), end].concat()
+    }
 }
 
 #[cfg(test)]
@@ -35,12 +86,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_aes_cbc_mode_decrypt() {
-        let src = fs::read("src/challenges/testdata/cbc_decrypt_raw.txt").unwrap();
-        let key = b"YELLOW SUBMARINE";
-        let iv = vec![b'\x00'; 16];
-        let got = aes_cbc_mode_decrypt(&src, key, &iv);
-        let want = String::from(
+    fn test_is_aes_ecb_or_cbc() {
+        let plaintext =
             "I'm back and I'm ringin' the bell \nA rockin' on the mike while the fly girls yell \nIn ecstasy in the back of me \n\
             Well that's my DJ Deshay cuttin' all them Z's \nHittin' hard and the girlies goin' crazy \nVanilla's on the mike, man \
             I'm not lazy. \n\nI'm lettin' my drug kick in \nIt controls my mouth and I begin \nTo just let it flow, let my concepts \
@@ -65,7 +112,14 @@ mod tests {
             and sing this song \n\nSay -- Play that funky music Say, go white boy, go white boy go \nplay that funky music Go white \
             boy, go white boy, go \nLay down and boogie and play that funky music till you die. \n\nPlay that funky music Come on, \
             Come on, let me hear \nPlay that funky music white boy you say it, say it \nPlay that funky music A little louder now \n\
-            Play that funky music, white boy Come on, Come on, Come on \nPlay that funky music \n\u{4}\u{4}\u{4}\u{4}");
-        assert_eq!(String::from_utf8(got).unwrap(), want);
+            Play that funky music, white boy Come on, Come on, Come on \nPlay that funky music \n\u{4}\u{4}\u{4}\u{4}".as_bytes();
+
+        for _ in 0..10 {
+            let mut cipher = RandomEncryptor::new();
+            let src = cipher.random_encrypt(plaintext);
+            let got = is_aes_ecb_or_cbc(&src);
+            let want = cipher.mode;
+            assert_eq!(got, want);
+        }
     }
 }

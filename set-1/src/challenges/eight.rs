@@ -1,7 +1,6 @@
 use common::io::read_input;
-use crypto::aes::BLOCK_SIZE;
+use guess::aes::is_aes_in_ecb_mode;
 use hex::decode;
-use std::collections::HashMap;
 use std::fs;
 
 /// Challenge 8 is the eight Matasano challenge of Set 1.
@@ -17,32 +16,14 @@ pub fn challenge_eight() {
 
 /// Reads a file containing a list of hexadecimal ciphertext and tries to
 /// find which one has been encrypted with AES-128 ECB mode.
-fn detect_aes_in_ecb_mode(src: &str) -> Result<Vec<u8>, String> {
+pub fn detect_aes_in_ecb_mode(src: &str) -> Result<Vec<u8>, String> {
     for s in src.split_ascii_whitespace() {
         let hex = decode(s.as_bytes()).unwrap();
-        if is_aws_in_ecb_mode(&hex) {
+        if is_aes_in_ecb_mode(&hex) {
             return Ok(hex.to_vec());
         }
     }
     Err(String::from("Could not detect ECB encrypted ciphertext"))
-}
-
-/// Try to detect whether the ciphertext has been encrypted with AES-128 ECB
-/// by checking for duplicated blocks and returns true if at least one is found.
-fn is_aws_in_ecb_mode(b: &[u8]) -> bool {
-    if b.len() % BLOCK_SIZE != 0 {
-        return false;
-    }
-
-    let mut cs: HashMap<&[u8], usize> = HashMap::new();
-    for (i, _) in b.iter().enumerate().step_by(BLOCK_SIZE) {
-        let counter = cs.entry(&b[i..i + BLOCK_SIZE]).or_insert(0);
-        if *counter > 0 {
-            return true;
-        }
-        *counter += 1;
-    }
-    false
 }
 
 #[cfg(test)]
