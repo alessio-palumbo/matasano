@@ -7,4 +7,5 @@ members = [
     "base64",
     "crypto",
     "common",
+    "guess",
 ]
