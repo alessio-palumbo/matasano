@@ -2,6 +2,7 @@ mod challenges;
 use crate::challenges::eleven::challenge_eleven;
 use crate::challenges::nine::challenge_nine;
 use crate::challenges::ten::challenge_ten;
+use crate::challenges::twelve::challenge_twelve;
 use common::io::read_input;
 
 fn main() {
@@ -15,7 +16,8 @@ fn main() {
             9 => return challenge_nine(),
             10 => return challenge_ten(),
             11 => return challenge_eleven(),
-            12..=16 => println!("Challenge unimplemented"),
+            12 => return challenge_twelve(),
+            13..=16 => println!("Challenge unimplemented"),
             _ => println!("Invalid challenge. Must be 9-16."),
         }
     }

@@ -27,7 +27,7 @@ fn is_aes_ecb_or_cbc(src: &[u8]) -> EncryptionMode {
 
 #[derive(Debug)]
 #[allow(dead_code)]
-struct RandomEncryptor {
+pub struct RandomEncryptor {
     key: Vec<u8>,
     mode: EncryptionMode,
 }
@@ -42,9 +42,18 @@ impl RandomEncryptor {
         }
     }
 
-    /// Generate an Aes128Cipher in either ECB or CBC mode, with randomly padded
+    /// Appends a salt to a plaintext and encrypts it with the random key.
+    pub fn random_append_ecb_encrypt(&self, src: &[u8], salt: &[u8]) -> Vec<u8> {
+        let cipher = Aes128Cipher::new(&self.key);
+        let src = [src.to_vec(), salt.to_vec()].concat();
+        let mut blocks = cipher.split_to_blocks(&src);
+        cipher.ecb_encrypt(&mut blocks);
+        blocks.into_iter().flatten().collect()
+    }
+
+    /// Generates an Aes128Cipher in either ECB or CBC mode, with randomly padded
     /// start and end and with random key/iv.
-    pub fn random_encrypt(&mut self, src: &[u8]) -> Vec<u8> {
+    fn random_encrypt(&mut self, src: &[u8]) -> Vec<u8> {
         let cipher = Aes128Cipher::new(&self.key);
         let src = Self::add_random_start_end(src, 5, 10);
         let mut blocks = cipher.split_to_blocks(&src);
