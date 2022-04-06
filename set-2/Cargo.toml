@@ -9,4 +9,5 @@ edition = "2021"
 common = { path = "../common" }
 crypto = { path = "../crypto" }
 guess = { path = "../guess" }
+base64 = "0.13.0"
 rand = "0.8.5"
