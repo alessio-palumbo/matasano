@@ -44,31 +44,48 @@ impl RandomEncryptor {
 
     /// Appends a salt to a plaintext and encrypts it with the random key.
     pub fn random_append_ecb_encrypt(&self, src: &[u8], salt: &[u8]) -> Vec<u8> {
-        let cipher = Aes128Cipher::new(&self.key);
         let src = [src.to_vec(), salt.to_vec()].concat();
-        let mut blocks = cipher.split_to_blocks(&src);
-        cipher.ecb_encrypt(&mut blocks);
+        self.ecb_encrypt(&src)
+    }
+
+    /// Encrypts with a random key with Aes128Cipher in ECB mode.
+    pub fn ecb_encrypt(&self, src: &[u8]) -> Vec<u8> {
+        self.encrypt(src, EncryptionMode::ECB)
+    }
+
+    /// Encrypts with a random key and IV with Aes128Cipher in ECB mode.
+    pub fn cbc_encrypt(&self, src: &[u8]) -> Vec<u8> {
+        self.encrypt(src, EncryptionMode::CBC)
+    }
+
+    /// Encrypts with a random key with Aes128Cipher according to the given mode.
+    fn encrypt(&self, src: &[u8], mode: EncryptionMode) -> Vec<u8> {
+        let cipher = Aes128Cipher::new(&self.key);
+        let mut blocks = cipher.split_to_blocks(src);
+        match mode {
+            EncryptionMode::ECB => cipher.ecb_encrypt(&mut blocks),
+            EncryptionMode::CBC => {
+                blocks = cipher.cbc_encrypt(&Self::random_key(BLOCK_SIZE), &mut blocks)
+            }
+            _ => panic!("Invalid mode"),
+        }
         blocks.into_iter().flatten().collect()
     }
 
     /// Generates an Aes128Cipher in either ECB or CBC mode, with randomly padded
     /// start and end and with random key/iv.
     fn random_encrypt(&mut self, src: &[u8]) -> Vec<u8> {
-        let cipher = Aes128Cipher::new(&self.key);
         let src = Self::add_random_start_end(src, 5, 10);
-        let mut blocks = cipher.split_to_blocks(&src);
-
         match rand::thread_rng().gen() {
             true => {
                 self.mode = EncryptionMode::ECB;
-                cipher.ecb_encrypt(&mut blocks);
+                self.ecb_encrypt(&src)
             }
             false => {
                 self.mode = EncryptionMode::CBC;
-                blocks = cipher.cbc_encrypt(&Self::random_key(BLOCK_SIZE), &mut blocks);
+                self.cbc_encrypt(&src)
             }
         }
-        blocks.into_iter().flatten().collect()
     }
 
     /// Generates a random key of the given size.
