@@ -12,6 +12,9 @@ pub enum EncryptionMode {
 
 pub const BLOCK_SIZE: usize = 16;
 
+/// Block is a type alias for a cipher block.
+pub type Block = GenericArray<u8, U16>;
+
 #[derive(Debug)]
 pub struct Aes128Cipher {
     cipher: Aes128,
@@ -27,8 +30,8 @@ impl Aes128Cipher {
     }
 
     /// Splits a buffer into blocks of BLOCK_SIZE adding padding if necessary
-    pub fn split_to_blocks(&self, src: &[u8]) -> Vec<GenericArray<u8, U16>> {
-        let mut blocks: Vec<GenericArray<u8, U16>> = Vec::with_capacity(
+    pub fn split_to_blocks(&self, src: &[u8]) -> Vec<Block> {
+        let mut blocks: Vec<Block> = Vec::with_capacity(
             src.len() / BLOCK_SIZE + (if src.len() % BLOCK_SIZE > 0 { 1 } else { 0 }),
         );
 
@@ -48,12 +51,8 @@ impl Aes128Cipher {
 
     /// Encrypts the given blocks with the cipher's key and the given IV
     /// according to CBC algorithm.
-    pub fn cbc_encrypt(
-        &self,
-        iv: &[u8],
-        blocks: &mut [GenericArray<u8, U16>],
-    ) -> Vec<GenericArray<u8, U16>> {
-        let mut cbc_blocks: Vec<GenericArray<u8, U16>> = Vec::with_capacity(blocks.len());
+    pub fn cbc_encrypt(&self, iv: &[u8], blocks: &mut [Block]) -> Vec<Block> {
+        let mut cbc_blocks: Vec<Block> = Vec::with_capacity(blocks.len());
         let v: [u8; BLOCK_SIZE] = iv.try_into().unwrap();
         let mut v = GenericArray::from(v);
 
@@ -69,12 +68,8 @@ impl Aes128Cipher {
     }
 
     /// Decrypts the CBC-encrypted blocks with the cipher's key and given IV.
-    pub fn cbc_decrypt(
-        &self,
-        iv: &[u8],
-        blocks: &mut [GenericArray<u8, U16>],
-    ) -> Vec<GenericArray<u8, U16>> {
-        let mut cbc_blocks: Vec<GenericArray<u8, U16>> = Vec::with_capacity(blocks.len());
+    pub fn cbc_decrypt(&self, iv: &[u8], blocks: &mut [Block]) -> Vec<Block> {
+        let mut cbc_blocks: Vec<Block> = Vec::with_capacity(blocks.len());
         let v: [u8; BLOCK_SIZE] = iv.try_into().unwrap();
         let mut v = GenericArray::from(v);
 
@@ -90,12 +85,12 @@ impl Aes128Cipher {
     }
 
     /// Encrypts the given blocks according to the ECB algorithm.
-    pub fn ecb_encrypt(&self, blocks: &mut [GenericArray<u8, U16>]) {
+    pub fn ecb_encrypt(&self, blocks: &mut [Block]) {
         self.cipher.encrypt_blocks(blocks);
     }
 
     /// Decrypts the given ECB-encrypted blocks.
-    pub fn ecb_decrypt(&self, blocks: &mut [GenericArray<u8, U16>]) {
+    pub fn ecb_decrypt(&self, blocks: &mut [Block]) {
         self.cipher.decrypt_blocks(blocks);
     }
 }
