@@ -53,9 +53,17 @@ impl RandomEncryptor {
         self.encrypt(src, EncryptionMode::ECB)
     }
 
-    /// Encrypts with a random key and IV with Aes128Cipher in ECB mode.
+    /// Encrypts with a random key and IV with Aes128Cipher in CBC mode.
     pub fn cbc_encrypt(&self, src: &[u8]) -> Vec<u8> {
         self.encrypt(src, EncryptionMode::CBC)
+    }
+
+    /// Decrypts with the previously generated random key with Aes128Cipher in ECB mode.
+    pub fn ecb_decrypt(&self, src: &[u8]) -> Vec<u8> {
+        let cipher = Aes128Cipher::new(&self.key);
+        let mut blocks = cipher.split_to_blocks(&src);
+        cipher.ecb_decrypt(&mut blocks);
+        blocks.into_iter().flatten().collect()
     }
 
     /// Encrypts with a random key with Aes128Cipher according to the given mode.
